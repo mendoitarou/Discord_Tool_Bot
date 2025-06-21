@@ -47,3 +47,9 @@ dockerコンテナとイメージの削除をしてください。
 }
 
 ```
+
+## 使用させていただいたもの
+
+- [VOICEVOX Engine](https://github.com/VOICEVOX/voicevox_engine)
+- [VOICEVOX Docker Image](https://hub.docker.com/r/voicevox/voicevox_engine)
+- [Discord.js](https://discord.js.org/)
