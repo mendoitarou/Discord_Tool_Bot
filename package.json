@@ -1,0 +1,25 @@
+{
+  "name": "discord_tool_bot",
+  "version": "1.0.0",
+  "description": "For Me!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mendoitarou/Discord_Tool_Bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mendoitarou/Discord_Tool_Bot/issues"
+  },
+  "homepage": "https://github.com/mendoitarou/Discord_Tool_Bot#readme",
+  "dependencies": {
+    "@discordjs/voice": "github:discordjs/voice",
+    "discord.js": "^14.20.0"
+  }
+}
