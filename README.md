@@ -38,7 +38,7 @@ dockerコンテナとイメージの削除をしてください。
 	"Reading_Role_Id": "",
 	"Voice_Channel_Id": "",
 	"If_Reding": true,
-	"VOICEVOX_API_URL": ""http://voicevox:50021,
+	"VOICEVOX_API_URL": "http://voicevox:50021",
 	"VOICEVOX_Speaker_Id": "3"
 }
 
