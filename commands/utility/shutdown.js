@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, MessageFlags, PermissionFlagsBits } = require('discord.js');
+const { getVoiceConnection } = require('@discordjs/voice');
 
-const { ownerId } = require('../../config.json');
+const { ownerId, guildId } = require('../../config.json');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -9,6 +10,11 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ADMINISTRATOR),
 	async execute(interaction) {
         if (interaction.user.id === ownerId) {
+            const voicechannel_connection = getVoiceConnection(guildId);
+            if (voicechannel_connection !== undefined) {
+                // ボイスチャンネルから切断
+                voicechannel_connection.destroy();
+            }
             await interaction.reply({content: '停止します。', flags: MessageFlags.Ephemeral});
             await process.exit();
         } else {
