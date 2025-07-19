@@ -2,9 +2,12 @@ const http = require('http');
 const fs = require('fs');
 
 const { Events } = require('discord.js');
-const { getVoiceConnection, createAudioPlayer, NoSubscriberBehavior, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
+const { getVoiceConnection } = require('@discordjs/voice');
 
-const { guildId, Reading_Channel, If_Reding, Reading_Role_Id, VOICEVOX_API_URL, VOICEVOX_Speaker_Id } = require('../config.json');
+const { guildId, Reading_Channel, If_Reding, Reading_Role_Id, VOICEVOX_Speaker_Id } = require('../config.json');
+
+const voicevox = require('../VOICEVOX.js');
+const player = require('../Playing_VoiceChannel.js');
 
 module.exports = {
     name: Events.MessageCreate,
@@ -32,69 +35,13 @@ module.exports = {
             //console.log(`Receive Message: User=${member.displayName},Content=${interaction.content}`)// For Debug
 
             // VOICEVOXにて音声を合成
-            try {
-                // Step1
-                const options_audio_query = {
-                    method: "POST",
-                    headers: {
-                        "accept": "application/json",
-                    },
-                };
-                url_audio_query = VOICEVOX_API_URL + `/audio_query?text=${encodeURIComponent(text)}&speaker=${VOICEVOX_Speaker_Id}`;
-                const request_audio_query = http.request(url_audio_query, options_audio_query, (res_audio_query) => {
-                    res_audio_query.setEncoding('utf8');
-                    let responseBody = '';
-                    res_audio_query.on('data', (chunk) => {
-                        responseBody += chunk;
-                    });
-                    res_audio_query.on("end", () => {
-                        const Audio_Query_Response = responseBody;
-                        //console.log(Audio_Query_Response)
-                        //console.log("Query_Ready");
-
-                        // Step2
-                        const options_synthesis = {
-                            method: "POST",
-                            headers: {
-                                "accept": "audio/wav",
-                                "Content-Type": "application/json",
-                            },
-                        };
-                        url_synthesis = VOICEVOX_API_URL + `/synthesis?speaker=${VOICEVOX_Speaker_Id}&enable_interrogative_upspeak=true`;
-                        const request_synthesis = http.request(url_synthesis, options_synthesis, (res_synthesis) => {
-                            res_synthesis.pipe(fs.createWriteStream("../output.wav"));
-
-                            res_synthesis.on("end", () => {
-                                // ボイスチャットでの再生処理
-                                const resource = createAudioResource('../output.wav');
-
-                                player = createAudioPlayer({
-                                    behaviors: {
-                                        noSubscriber: NoSubscriberBehavior.Pause,
-                                    },
-                                });
-                                // 再生開始
-                                player.play(resource);
-                                subscriber = voicechannel_connection.subscribe(player);
-                                player.on(AudioPlayerStatus.Idle, () => {
-                                    // 再生が終わったので解除
-                                    subscriber.unsubscribe();
-                                });
-
-                                //console.log(`PlayerStatus: ${player.state.status}`);
-                                //console.log(`Connection_Status: ${voicechannel_connection.state.status}`);
-
-                                //console.log("Play Audio");
-                            });
-                        });
-                        request_synthesis.write(Audio_Query_Response);
-                        request_synthesis.end();
-                    });
-                });
-                request_audio_query.end();
-            } catch (error) {
-                console.log(error);
+            const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id)
+            if (resource === "Error") {
+                console.log('ERROR');
+                return;
             }
+            // ボイスチャットでの再生処理
+            player.play_resource(voicechannel_connection);
         } else {
             // 非対象者(一個ずつ確認するらしく、何回か呼ばれていると思われる)
             return;
