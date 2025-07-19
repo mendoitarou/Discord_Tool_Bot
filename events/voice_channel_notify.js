@@ -29,13 +29,19 @@ module.exports = {
                 text = `${oldState.member.displayName}さんが入室しました。`
 
                 // VOICEVOXにて音声を合成
-                const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id)
-                if (resource === "Error") {
-                    console.log('ERROR');
-                    return;
-                }
-                // ボイスチャットでの再生処理
-                player.play_resource(voicechannel_connection);
+                // VOICEVOXにて音声を合成
+                new Promise(async (resolve, reject) => {
+                    const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id)
+                    resolve(resource);
+                })
+                    .then((resource) => {
+                        // ボイスチャットでの再生処理
+                        player.play_resource(voicechannel_connection);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        return "Error";
+                    });
             }
             return channel.send(
                 //`:inbox_tray: <@${oldState.member.user.id}> さんが入室しました。`
@@ -55,13 +61,18 @@ module.exports = {
                 text = `${oldState.member.displayName}さんが退室しました。`
 
                 // VOICEVOXにて音声を合成
-                const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id)
-                if (resource === "Error") {
-                    console.log('ERROR');
-                    return;
-                }
-                // ボイスチャットでの再生処理
-                player.play_resource(voicechannel_connection);
+                new Promise(async (resolve, reject) => {
+                    const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id)
+                    resolve(resource);
+                })
+                    .then((resource) => {
+                        // ボイスチャットでの再生処理
+                        player.play_resource(voicechannel_connection);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        return "Error";
+                    });
             }
             return channel.send(
                 //`:outbox_tray: <@${newState.member.user.id}> さんが退出しました。`

@@ -35,13 +35,18 @@ module.exports = {
             //console.log(`Receive Message: User=${member.displayName},Content=${interaction.content}`)// For Debug
 
             // VOICEVOXにて音声を合成
-            const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id)
-            if (resource === "Error") {
-                console.log('ERROR');
-                return;
-            }
-            // ボイスチャットでの再生処理
-            player.play_resource(voicechannel_connection);
+            new Promise(async (resolve, reject) => {
+                const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id)
+                resolve(resource);
+            })
+                .then((resource) => {
+                    // ボイスチャットでの再生処理
+                    player.play_resource(voicechannel_connection);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    return "Error";
+                });
         } else {
             // 非対象者(一個ずつ確認するらしく、何回か呼ばれていると思われる)
             return;

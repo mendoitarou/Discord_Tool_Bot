@@ -129,14 +129,19 @@ module.exports = {
 				//console.log(`Receive Message: User=${member.displayName},Content=${interaction.content}`)// For Debug
 				// VOICEVOXにて音声を合成
 				text = 'これはテスト音声です。';
-            	// VOICEVOXにて音声を合成
-				const resource = voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
-				if (resource === "Error") {
-					console.log('ERROR');
-					return;
-				}
-				// ボイスチャットでの再生処理
-				player.play_resource(voicechannel_connection);
+				// VOICEVOXにて音声を合成
+				new Promise(async (resolve, reject) => {
+					const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id)
+					resolve(resource);
+				})
+					.then((resource) => {
+						// ボイスチャットでの再生処理
+						player.play_resource(voicechannel_connection);
+					})
+					.catch((error) => {
+						console.log(error);
+						return "Error";
+					});
 			} else {
 				const voicechannel_connection = getVoiceConnection(guildId);
 				if (voicechannel_connection === undefined) return;
