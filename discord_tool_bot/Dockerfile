@@ -7,6 +7,7 @@ COPY package*.json ./
 COPY config.json ./
 COPY events/ ./
 COPY commands/ ./
+COPY * ./
 
 # Install FFMPEG
 RUN apk add --update --no-cache ffmpeg
