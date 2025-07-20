@@ -1,6 +1,7 @@
 const { NoSubscriberBehavior, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
 
 function play_resource(voicechannel_connection, source='./output.wav') {
+    //console.log("[Playing_VoiceChannel.js]Do_play-resource");
     const resource = createAudioResource(source);
 
     // ボイスチャットでの再生処理

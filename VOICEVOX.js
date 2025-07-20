@@ -5,8 +5,8 @@ const { VOICEVOX_API_URL } = require('./config.json');
 
 function generate(text, speaker_Id) {
     // クエリの作成
-    try {
-        new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
+        try {
             const options_audio_query = {
                 method: "POST",
                 headers: {
@@ -34,50 +34,33 @@ function generate(text, speaker_Id) {
                     url_synthesis = VOICEVOX_API_URL + `/synthesis?speaker=${speaker_Id}&enable_interrogative_upspeak=true`;
                     const request_synthesis = http.request(url_synthesis, options_synthesis, (res_synthesis) => {
                         res_synthesis.pipe(fs.createWriteStream("./output.wav"));
-                        resolve('OK')
-                        return 'OK';
+                        //console.log("[VOICEVOX.js]Done_Generate");
+                        resolve('OK');
                     });
                     request_synthesis.write(Audio_Query_Response);
                     request_synthesis.end();
                 });
             });
             request_audio_query.end();
-        })
-        .then((resource) => {
-            return resource;
-        })
-        .catch((error) => {
+        } catch (error) {
             console.log(error);
-            return "Error";
-        })
-        .catch((error) => {
-            console.log(error);
-            return "Error";
-        });
-    } catch (error) {
-        console.log(error);
-        return "Error";
-    }
+            reject("Error");
+        }
+    })
 }
 
 async function voicevox_generate_voice(text, speaker_Id) {
     // 関数を実行
-    try {
-        new Promise(async (resolve, reject) => {
-            const resource = await generate(text, speaker_Id);
-            resolve(resource);
-        })
-        .then((resource) => {
-            return resource;
-        })
-        .catch((error) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await generate(text, speaker_Id);
+            //console.log("[VOICEVOX.js]Done_generate-function");
+            resolve();
+        } catch (error) {
             console.log(error);
-            return "Error";
-        });
-    } catch (error) {
-        console.log(error);
-        return "Error";
-    }
+            reject("Error");
+        }
+    })
 }
 
 // ほかのファイルで使うため
