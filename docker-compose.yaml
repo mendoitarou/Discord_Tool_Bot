@@ -1,0 +1,11 @@
+services:
+  voicevox:
+    image: voicevox/voicevox_engine:cpu-latest
+    restart: always
+
+  discord_tool_bot:
+    build: ./discord_tool_bot
+    command: node .
+    restart: always
+    depends_on:
+      - voicevox
