@@ -17,18 +17,32 @@
 編集中
 
 ## 簡単なセットアップ
-Docker使います。
+Docker Compose使います。
 
-``docker_setup.sh``を実行でセットアップ完了。
+コマンド一発で自動でいろいろやってくれます。
 
-コンテナの起動は``docker_voicevox_start.sh``を実行後、``docker_start.sh``を実行。
+```shell
+docker-compose up -d
+```
 
 ## 更新
-dockerコンテナとイメージの削除をしてください。
+ファイルの更新から、起動までやります。
 
-``docker ps``で起動中のコンテナ一覧を見て、``docker stop [ID]``で停止後、``docker rm [ID]``でコンテナ削除。
+まず、レポジトリからファイルを同期します。
 
-``docker images``でイメージ一覧を見て、``docker image rm [ID]``で削除。(この時、コンテナが存在するとかでエラーが出たらIDをご丁寧に教えてくれるのでコンテナ削除してください。)
+(`config.json`が競合してできない場合は一度別の名前に変更してから同期し、その後元に戻してください。)
+
+```shell
+git pull
+```
+
+次に、再ビルドして起動します。
+
+```shell
+docker-compose up -d --build
+```
+
+これで終わり。簡単すぎる！
 
 ## Default Config
 ```
