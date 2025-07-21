@@ -121,7 +121,7 @@ module.exports = {
 				await interaction.reply({ content: 'あなたはチャット読み上げ対象者ではありません！', flags: MessageFlags.Ephemeral });
 			}
 		} else if (interaction.options.getSubcommand() === 'test') {
-			const generate = interaction.options.getBoolean('Generate');
+			const generate = interaction.options.getBoolean('generate');
 			if (generate) {
 				// ボイスチャンネルに接続されているか確認
 				const voicechannel_connection = getVoiceConnection(guildId);
