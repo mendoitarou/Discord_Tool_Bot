@@ -24,15 +24,16 @@ module.exports = {
             if (If_Notify_Status_Voice_Channel == true) {// ボイスチャンネルで通知するかどうかをチェック
                 // ボイスチャンネルに接続されているか確認
                 const voicechannel_connection = getVoiceConnection(guildId);
-                if (voicechannel_connection === undefined) return;
+                if (voicechannel_connection !== undefined) {
+                    // 接続状態のみ、音声通知をする。
+                    text = `${oldState.member.displayName}さんが入室しました。`
 
-                text = `${oldState.member.displayName}さんが入室しました。`
-
-                // VOICEVOXにて音声を合成
-                const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
-                if (resource === "Error") return;
-                // ボイスチャットでの再生処理
-                player.play_resource(voicechannel_connection);
+                    // VOICEVOXにて音声を合成
+                    const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
+                    if (resource === "Error") return;
+                    // ボイスチャットでの再生処理
+                    player.play_resource(voicechannel_connection);
+                }
             }
             return channel.send(
                 //`:inbox_tray: <@${oldState.member.user.id}> さんが入室しました。`
@@ -47,15 +48,16 @@ module.exports = {
             if (If_Notify_Status_Voice_Channel === true) {// ボイスチャンネルで通知するかどうかをチェック
                 // ボイスチャンネルに接続されているか確認
                 const voicechannel_connection = getVoiceConnection(guildId);
-                if (voicechannel_connection === undefined) return;
+                if (voicechannel_connection !== undefined) {
+                    // 接続状態のみ、音声通知をする。
+                    text = `${oldState.member.displayName}さんが退室しました。`
 
-                text = `${oldState.member.displayName}さんが退室しました。`
-
-                // VOICEVOXにて音声を合成
-                const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
-                if (resource === "Error") return;
-                // ボイスチャットでの再生処理
-                player.play_resource(voicechannel_connection);
+                    // VOICEVOXにて音声を合成
+                    const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
+                    if (resource === "Error") return;
+                    // ボイスチャットでの再生処理
+                    player.play_resource(voicechannel_connection);
+                }
             }
             return channel.send(
                 //`:outbox_tray: <@${newState.member.user.id}> さんが退出しました。`
