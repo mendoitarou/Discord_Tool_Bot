@@ -22,7 +22,7 @@ Docker Compose使います。
 コマンド一発で自動でいろいろやってくれます。
 
 ```shell
-docker-compose up -d
+docker compose up -d
 ```
 
 ## 更新
@@ -36,10 +36,16 @@ docker-compose up -d
 git pull
 ```
 
-次に、再ビルドして起動します。
+次に、コマンドを更新します。
 
 ```shell
-docker-compose up -d --build
+docker compose run --build discord_tool_bot node deploy-commands.js
+```
+
+最後に、再ビルドして起動します。
+
+```shell
+docker compose up -d --build
 ```
 
 これで終わり。簡単すぎる！
