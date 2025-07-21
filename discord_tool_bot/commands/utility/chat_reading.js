@@ -129,25 +129,22 @@ module.exports = {
 				//console.log(`Receive Message: User=${member.displayName},Content=${interaction.content}`)// For Debug
 				// VOICEVOXにて音声を合成
 				text = 'これはテスト音声です。';
-				// VOICEVOXにて音声を合成
-				new Promise(async (resolve, reject) => {
-					const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id)
-					resolve(resource);
-				})
-					.then((resource) => {
-						// ボイスチャットでの再生処理
-						player.play_resource(voicechannel_connection);
-					})
-					.catch((error) => {
-						console.log(error);
-						return "Error";
-					});
+				const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
+				if (resource === "Error") return;
+				// ボイスチャットでの再生処理
+				player.play_resource(voicechannel_connection);
+
+				// メッセージ送信
+				await interaction.reply({ content: 'テスト音声を再生します。(生成あり)', flags: MessageFlags.Ephemeral });
 			} else {
 				const voicechannel_connection = getVoiceConnection(guildId);
 				if (voicechannel_connection === undefined) return;
 
 				// ボイスチャットでの再生処理
 				player.play_resource(voicechannel_connection, './test.wav');
+
+				// メッセージ送信
+				await interaction.reply({ content: 'テスト音声を再生します。(生成なし)', flags: MessageFlags.Ephemeral });
 			}
 		} else {
 			await interaction.reply({ content: `[ERROR] コマンドの構文が間違っている可能性があります。\n正しい構文で再度実行してください。`, flags: MessageFlags.Ephemeral });
