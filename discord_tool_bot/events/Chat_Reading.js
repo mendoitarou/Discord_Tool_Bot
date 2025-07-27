@@ -25,7 +25,7 @@ module.exports = {
                 text = `${member.displayName}さんが画像を送信しました。`;
             } else {
                 // 読み上げテキストを作成
-                let regex_UserId = /<@[0-9]{17,18}>/g;// ユーザIdの正規表現
+                let regex_UserId = /<@[0-9]{17,19}>/g;// ユーザIdの正規表現
                 const message = `${interaction.content}`;// 受信したメッセージをいったん格納
                 if(regex_UserId.test(message)) {
                     // メンションしてたら、ユーザIDをユーザ名に置き換え
