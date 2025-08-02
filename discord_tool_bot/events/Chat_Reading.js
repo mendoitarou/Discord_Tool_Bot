@@ -29,9 +29,13 @@ module.exports = {
                 const message = `${interaction.content}`;// 受信したメッセージをいったん格納
                 if(regex_UserId.test(message)) {
                     // メンションしてたら、ユーザIDをユーザ名に置き換え
-                    let get_UserId = message.match(regex_UserId)[0].replace("<@", "").replace(">", "");// ユーザIDを抜き出し
-                    let get_member = await interaction.guild.members.fetch(`${get_UserId}`);// ユーザIDからサーバ内のmemberを取得
-                    let receive_Message = message.replace(regex_UserId, `、${get_member.displayName}`);// ユーザIDの箇所を表示名に置き換え
+                    let receive_Message = message;
+                    await message.match(regex_UserId).forEach(async get_UserId => {// forEachは非同期処理？みたいなのでawaitする
+                        // メンション箇所ごとに実行
+                        let User_Id = get_UserId.replace("<@", "").replace(">", "");// ユーザIDのみに加工
+                        let get_member = await interaction.guild.members.fetch(`${User_Id}`);// ユーザIDからサーバ内のmemberを取得
+                        receive_Message = receive_Message.replace(`${get_UserId}`, `、${get_member.displayName}`);// ユーザIDの箇所を表示名に置き換え
+                    });
                     text = `${member.displayName}さんのメッセージ、${receive_Message.replace(/r?n/g, '、')}`;// 最終的なメッセージを指定
                 } else {
                     // メンションしてないならそのまま
