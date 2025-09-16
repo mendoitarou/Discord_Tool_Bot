@@ -8,7 +8,7 @@ const player = require('../Playing_VoiceChannel.js');
 
 module.exports = {
     name: Events.VoiceStateUpdate,
-    async execute(oldState, newState) {
+    async execute(oldState, newState, client) {
         if (oldState.guild.id !== guildId) return;
         if (oldState.member.user.bot) return;// Bot検知
         const channel = oldState.member.guild.channels.cache.get(
@@ -53,7 +53,7 @@ module.exports = {
                 );
             }
         } else if (oldState.channelId !== null && newState.channelId === null) {
-            const botMember = oldState.client.guilds.cache.get(guildId).members.cache.get('1089445946821189685');// BOTの通話参加状態を取得
+            const botMember = oldState.client.guilds.cache.get(guildId).members.cache.get(client.user.id);// BOTの通話参加状態を取得
             if(oldState.channel.members.size == 1) {// 残り人数が1名の時(BOTのみなど)
                 if(botMember && botMember.voice.channel && oldState.channelId === botMember.voice.channel.id) {// BOTが通話に参加しているとき
                     // BOTだけしか通話に残っていない場合、自動で切断する。
