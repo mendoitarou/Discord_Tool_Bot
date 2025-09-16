@@ -53,7 +53,7 @@ module.exports = {
                 );
             }
         } else if (oldState.channelId !== null && newState.channelId === null) {
-            const botMember = newState.client.guilds.cache.get(guildId).members.cache.get(client.user.id);// BOTの通話参加状態を取得
+            const botMember = oldState.client.guilds.cache.get(guildId).members.cache.get(client.user.id);// BOTの通話参加状態を取得
             if(oldState.channel.members.size == 1) {// 残り人数が1名の時(BOTのみなど)
                 if(botMember && botMember.voice.channel && oldState.channelId === botMember.voice.channel.id) {// BOTが通話に参加しているとき
                     // BOTだけしか通話に残っていない場合、自動で切断する。
