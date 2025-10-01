@@ -30,9 +30,9 @@ module.exports = {
                 const message = `${interaction.content}`;// 受信したメッセージをいったん格納
                 
                 // URLが含まれているかチェック
-                if(regex_URL.test(message)) {
+                if(message.match(regex_URL)) {
                     text = `${member.displayName}さんがURLを送信しました。`;
-                } else if(regex_UserId.test(message)) {
+                } else if(message.match(regex_UserId)) {
                     // メンションしてたら、ユーザIDをユーザ名に置き換え
                     let receive_Message = message;
                     await message.match(regex_UserId).forEach(async get_UserId => {// forEachは非同期処理？みたいなのでawaitする
