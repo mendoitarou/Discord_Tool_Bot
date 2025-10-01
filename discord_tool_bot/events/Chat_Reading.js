@@ -26,7 +26,7 @@ module.exports = {
             } else {
                 // 読み上げテキストを作成
                 let regex_UserId = /<@[0-9]{17,19}>/g;// ユーザIdの正規表現
-                let regex_URL = /https?:\/\/[^\s]+/g;// URL検出用の正規表現
+                let regex_URL = /https?:\/\/(?:[-\w.])+(?::[0-9]+)?(?:\/(?:[\w\/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:[\w.])*)?)?/g;// URL検出用の正規表現
                 const message = `${interaction.content}`;// 受信したメッセージをいったん格納
                 
                 // URLが含まれているかチェック
