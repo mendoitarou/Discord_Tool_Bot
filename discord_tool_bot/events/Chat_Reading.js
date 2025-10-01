@@ -26,8 +26,13 @@ module.exports = {
             } else {
                 // 読み上げテキストを作成
                 let regex_UserId = /<@[0-9]{17,19}>/g;// ユーザIdの正規表現
+                let regex_URL = /https?:\/\/[^\s]+/g;// URL検出用の正規表現
                 const message = `${interaction.content}`;// 受信したメッセージをいったん格納
-                if(regex_UserId.test(message)) {
+                
+                // URLが含まれているかチェック
+                if(regex_URL.test(message)) {
+                    text = `${member.displayName}さんがURLを送信しました。`;
+                } else if(regex_UserId.test(message)) {
                     // メンションしてたら、ユーザIDをユーザ名に置き換え
                     let receive_Message = message;
                     await message.match(regex_UserId).forEach(async get_UserId => {// forEachは非同期処理？みたいなのでawaitする
