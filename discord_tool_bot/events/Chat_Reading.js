@@ -26,6 +26,7 @@ module.exports = {
             } else {
                 // 読み上げテキストを作成
                 let regex_UserId = /<@[0-9]{17,19}>/g;// ユーザIdの正規表現
+                let regex_emoji = /(?:^|[^<]):([^:\s]+):|<:([^:\s]+):(\d+)>/g;// 絵文字の正規表現
                 let regex_URL = /https?:\/\/(?:[-\w.])+(?::[0-9]+)?(?:\/(?:[\w\/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:[\w.])*)?)?/g;// URL検出用の正規表現
                 const message = `${interaction.content}`;// 受信したメッセージをいったん格納
                 
@@ -41,10 +42,19 @@ module.exports = {
                         let get_member = await interaction.guild.members.fetch(`${User_Id}`);// ユーザIDからサーバ内のmemberを取得
                         receive_Message = receive_Message.replace(`${get_UserId}`, `、${get_member.displayName}`);// ユーザIDの箇所を表示名に置き換え
                     });
+                    // 絵文字検知
+                    if(message.match(regex_emoji) !== null) {
+                        receive_Message = receive_Message.replace(regex_emoji, '絵文字');
+                    }
                     text = `${member.displayName}さんのメッセージ、${receive_Message.replace(/r?n/g, '、')}`;// 最終的なメッセージを指定
                 } else {
                     // メンションしてないならそのまま
-                    text = `${member.displayName}さんのメッセージ、${message.replace(/r?n/g, '、')}`;// 特に制限などは設けていない。必要そうであれば処理をここの上に追加。
+                    // 絵文字検知
+                    let receive_Message = message;
+                    if(message.match(regex_emoji) !== null) {
+                        receive_Message = receive_Message.replace(regex_emoji, '絵文字');
+                    }
+                    text = `${member.displayName}さんのメッセージ、${receive_Message.replace(/r?n/g, '、')}`;// 特に制限などは設けていない。必要そうであれば処理をここの上に追加。
                 }
                 console.log(`Text: ${text}`);
             }
