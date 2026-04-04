@@ -30,8 +30,8 @@ module.exports = {
             results.push( crypto.randomInt(1, sides + 1) );
         }
 		const MessageEmbedVersion = new EmbedBuilder()
-			.setTitle(`${count}d${sides}ダイスを振る`)
-            .setDescription(`結果: ${results}`)
+			.setTitle(`${count}d${sides}ダイスを振った結果`)
+            .addFields({ name: '結果', value: `${results}` })     
         return await interaction.reply({embeds: [MessageEmbedVersion]});
 	},
 };
