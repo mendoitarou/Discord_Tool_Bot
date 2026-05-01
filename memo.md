@@ -4,6 +4,13 @@ https://github.com/mendoitarou/Discord_Tool_Bot
 # Discord.js Document
 https://discord.js.org/
 
+## コマンド関連
+スラッシュコマンド
+https://discord.js.org/docs/packages/discord.js/14.26.2/SlashCommandBuilder:Class
+
+コマンドオプション取得
+https://discord.js.org/docs/packages/discord.js/14.26.2/CommandInteractionOptionResolver:Class
+
 https://qiita.com/Mori-chan/items/2df4ad15adc79cf2a167
 https://qiita.com/Mori-chan/items/84622c733dc43c419dc5
 
