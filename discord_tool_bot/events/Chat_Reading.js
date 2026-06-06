@@ -31,10 +31,14 @@ module.exports = {
                 let regex_mark_only = /^[!！?？]+$/g;// 感嘆符/疑問符のみのメッセージかどうかの正規表現
                 let regex_question_mark = /[?？]+/g;// 疑問符単体(任意文字数)のメッセージかの正規表現
                 let regex_bikkuri_mark = /[!！]+/g;// 感嘆符単体(任意文字数)のメッセージかの正規表現
+                let regex_notreadflag = /^#NotReadTextBody/;// 読み上げしないフラグ(#NotReadTextBody)が先頭についているかの正規表現
+                let regex_ignoreflag = /^#ignoreMessage/;// 無視するフラグ(#ignoreMessage)が先頭についているかの正規表現
                 let regex_URL = /https?:\/\/(?:[-\w.])+(?::[0-9]+)?(?:\/(?:[\w\/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:[\w.])*)?)?/g;// URL検出用の正規表現
                 const message = `${interaction.content}`;// 受信したメッセージをいったん格納
 
                 function checkURL(receiveMessage) { return (receiveMessage.match(regex_URL) !== null) }
+                function checkNotReadFlag(receive_Message) { return (receive_Message.match(regex_notreadflag) !== null) }
+                function checkIgnoreFlag(receive_Message) { return (receive_Message.match(regex_ignoreflag) !== null) }
                 function checkUserId(receiveMessage) { return (receiveMessage.match(regex_UserId) !== null ) }
                 async function replaceUserId(receiveMessage) {
                     // ユーザID置き換え
@@ -99,9 +103,12 @@ module.exports = {
                     }
                 }
 
-                // URLが含まれているかチェック
-                if(checkURL(message)) {
+                // 正規表現でチェック
+                if(checkIgnoreFlag(message)) return;// 無視するフラグがついてたら
+                if(checkURL(message)) {// URLが含まれているかチェック
                     text = `${member.displayName}さんがURLを送信しました。`;
+                } else if (checkNotReadFlag(message)) {// 読み上げしないフラグがついてるかチェック
+                    text = `${member.displayName}さんがテキストメッセージを送信しました。`;
                 } else {
                     // 普通にメッセージだったら
                     let receive_Message = message;
