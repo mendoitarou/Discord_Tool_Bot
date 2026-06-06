@@ -28,6 +28,9 @@ module.exports = {
                 let regex_UserId = /<@[0-9]{17,19}>/g;// ユーザIdの正規表現
                 let regex_RoleId = /<@&[0-9]{19}>/g;// ロールIdの正規表現
                 let regex_emoji = /(?:^|[^<]):([^:\s]+):|<:([^:\s]+):(\d+)>/g;// 絵文字の正規表現
+                let regex_mark_only = /^[!！?？]+$/g;// 感嘆符/疑問符のみのメッセージかどうかの正規表現
+                let regex_question_mark = /[?？]+/g;// 疑問符単体(任意文字数)のメッセージかの正規表現
+                let regex_bikkuri_mark = /[!！]+/g;// 感嘆符単体(任意文字数)のメッセージかの正規表現
                 let regex_URL = /https?:\/\/(?:[-\w.])+(?::[0-9]+)?(?:\/(?:[\w\/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:[\w.])*)?)?/g;// URL検出用の正規表現
                 const message = `${interaction.content}`;// 受信したメッセージをいったん格納
 
@@ -76,21 +79,44 @@ module.exports = {
                         return receiveMessage;// 検知しなかったらそのまま返す
                     }
                 }
-                
+
+                function checkMarkOnly(receive_Message) { return (receive_Message.match(regex_mark_only) !== null) }
+                function replaceBikkuri_QuestionMark(receive_Message) {
+                    // 感嘆符/疑問符置き換え
+                    if(checkMarkOnly(receive_Message)) {
+                        // 感嘆符/疑問符のみで構成されている
+                        const hasBikkuri = regex_bikkuri_mark.test(receive_Message);
+                        const hasQestion = regex_question_mark.test(receive_Message);
+                        if(hasBikkuri && hasQestion) {
+                            return "(感嘆符)(疑問符)";// 感嘆符と疑問符が含まれているので、置き換えて返す
+                        } else if(hasBikkuri) {
+                            return "(感嘆符)";// 感嘆符だけが含まれているので、置き換えて返す
+                        } else if(hasQestion) {
+                            return "(疑問符)";// 疑問符だけが含まれているので、置き換えて返す
+                        }
+                    } else {
+                        return receive_Message;// 検知しなかったらそのまま返す
+                    }
+                }
+
                 // URLが含まれているかチェック
                 if(checkURL(message)) {
                     text = `${member.displayName}さんがURLを送信しました。`;
                 } else {
                     // 普通にメッセージだったら
                     let receive_Message = message;
-                    if(checkUserId(receive_Message)) {
-                        receive_Message = await replaceUserId(receive_Message);// ユーザIDチェック
+                    if(checkUserId(receive_Message)) {// ユーザIDチェック
+                        receive_Message = await replaceUserId(receive_Message);
                     }
-                    if(checkRoleId(receive_Message)) {
-                        receive_Message = await replaceRoleId(receive_Message);// ロールIDチェック
+                    if(checkRoleId(receive_Message)) {// ロールIDチェック
+                        receive_Message = await replaceRoleId(receive_Message);
                     }
-                    if(checkUserEmoji(receive_Message)) {
-                        receive_Message = replaceUserEmoji(receive_Message);// ユーザー絵文字チェック
+                    if(checkUserEmoji(receive_Message)) {// ユーザー絵文字チェック
+                        receive_Message = replaceUserEmoji(receive_Message);
+                    }
+                    // 感嘆符/疑問符チェック
+                    if(checkMarkOnly(receive_Message)) {// 感嘆符/疑問符のみで構成されている
+                        receive_Message = replaceBikkuri_QuestionMark(receive_Message);
                     }
                     text = `${member.displayName}さんのメッセージ、${receive_Message.replace(/r?n/g, '、')}`;// 最終的なメッセージを指定
                 }
