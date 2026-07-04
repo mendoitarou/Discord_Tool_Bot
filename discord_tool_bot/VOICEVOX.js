@@ -1,9 +1,10 @@
 const http = require('http');
 const fs = require('fs');
+const crypto = require("crypto");
 
 const { VOICEVOX_API_URL } = require('./config.json');
 
-function generate(text, speaker_Id) {
+function generate(text, speaker_Id, wavId) {
     // クエリの作成
     return new Promise((resolve, reject) => {
         try {
@@ -33,7 +34,7 @@ function generate(text, speaker_Id) {
                     };
                     url_synthesis = VOICEVOX_API_URL + `/synthesis?speaker=${speaker_Id}&enable_interrogative_upspeak=true`;
                     const request_synthesis = http.request(url_synthesis, options_synthesis, (res_synthesis) => {
-                        res_synthesis.pipe(fs.createWriteStream("./output.wav"));
+                        res_synthesis.pipe(fs.createWriteStream(`./output_${wavId}.wav`));
                         //console.log("[VOICEVOX.js]Done_Generate");
                         resolve('OK');
                     });
@@ -53,9 +54,10 @@ async function voicevox_generate_voice(text, speaker_Id) {
     // 関数を実行
     return new Promise(async (resolve, reject) => {
         try {
-            await generate(text, speaker_Id);
+            const uuid = crypto.randomUUID();
+            await generate(text, speaker_Id, uuid);
             //console.log("[VOICEVOX.js]Done_generate-function");
-            resolve();
+            resolve(uuid);
         } catch (error) {
             console.log(error);
             reject("Error");

@@ -9,6 +9,42 @@ const { guildId, Reading_Channel, If_Reding, Reading_Role_Id, VOICEVOX_Speaker_I
 const voicevox = require('../VOICEVOX.js');
 const player = require('../Playing_VoiceChannel.js');
 
+// Queue
+const queues = new Map();
+const playingState = new Map();
+
+function enqueue(guildid, text) {
+    const queue_list = queues.get(guildid);
+    queue_list.push(text);
+    playNext(guildid);
+}
+
+async function playNext(guildid) {
+    // チェック
+    let isPlaying = playingState.get(guildid);
+    if (isPlaying) return;
+    let queue_list = queues.get(guildid);
+    if (queue_list.length === 0) return;
+
+    isPlaying = true; // 再生中のフラグを立てる
+    playingState.set(guildid, isPlaying); // Mapの方に適用する
+    
+    // 読み上げ準備
+    const voicechannel_connection = getVoiceConnection(guildId);// ボイスチャンネルのコネクションを取得
+    if (voicechannel_connection === undefined) return;
+    
+    while (queue_list.length > 0) { // キュー消化
+        const text = queue_list.shift();
+        // 音声合成
+        const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
+        if (resource === "Error") continue; // エラーが置きたらスキップ
+        await player.play_resource(voicechannel_connection, './output_'+resource+'.wav');  // 読み上げ完了まで待機
+    }
+
+    isPlaying = false;
+    playingState.set(guildid, isPlaying); // Mapの方に適用する
+}
+
 module.exports = {
     name: Events.MessageCreate,
     async execute(interaction) {
@@ -130,18 +166,18 @@ module.exports = {
                 console.log(`Text: ${text}`);
             }
 
-            // テキストメッセージ(であると考えられる)
-            // ボイスチャンネルに接続されているか確認
-            const voicechannel_connection = getVoiceConnection(guildId);
-            if (voicechannel_connection === undefined) return;
-            //console.log(`Receive Message: User=${member.displayName},Content=${interaction.content}`)// For Debug
+            // Mapにサーバの情報があるかチェック
+            if ( !queues.has(guildId) ) {
+                // 持ってない
+                queues.set(guildId, []); // 配列セット
+            }
+            if ( !playingState.has(guildId) ) {
+                // 持ってない
+                playingState.set(guildId, false); // booleanセット
+            }
 
-            // VOICEVOXにて音声を合成
-            //console.log("Execute_Read");
-            const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
-            if(resource === "Error") return;
             // ボイスチャットでの再生処理
-            player.play_resource(voicechannel_connection);
+            enqueue(guildId, text);
         } else {
             // 非対象者(一個ずつ確認するらしく、何回か呼ばれていると思われる)
             return;
