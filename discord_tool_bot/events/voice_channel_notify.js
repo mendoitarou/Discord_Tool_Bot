@@ -1,7 +1,10 @@
 const { Events, EmbedBuilder } = require('discord.js');
 const { getVoiceConnection } = require('@discordjs/voice');
 
-const { guildId, NOTIFY_CHANNEL, If_Notify_Status_Voice_Channel, VOICEVOX_Speaker_Id } = require('../config.json');
+const guildId = process.env.guildId;
+const NOTIFY_CHANNEL = process.env.NOTIFY_CHANNEL;
+const If_Notify_Status_Voice_Channel = process.env.If_Notify_Status_Voice_Channel;
+const VOICEVOX_Speaker_Id = process.env.VOICEVOX_Speaker_Id;
 
 const voicevox = require('../VOICEVOX.js');
 const player = require('../Playing_VoiceChannel.js');

@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 
-const { DISCORD_BOT_TOKEN } = require('./config.json');
+const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 
 const client = new Client({
   intents: [

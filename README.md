@@ -19,18 +19,26 @@
 ## 簡単なセットアップ
 Docker Compose使います。
 
+`docker-compose.yaml`に環境変数を設定します。
+
 コマンド一発で自動でいろいろやってくれます。
 
 ```shell
 docker compose up -d
 ```
 
+コマンドの設定もします。
+
+```shell
+docker compose run discord_tool_bot node deploy-commands.js
+```
+
+これで終わりです。
+
 ## 更新
 ファイルの更新から、起動までやります。
 
 まず、レポジトリからファイルを同期します。
-
-(`config.json`が競合してできない場合は一度別の名前に変更してから同期し、その後元に戻してください。)
 
 ```shell
 git pull
@@ -50,41 +58,20 @@ docker compose up -d --build
 
 これで終わり。簡単すぎる！
 
-## Default Config
-```
-{
-	"DISCORD_BOT_TOKEN": "",
-	"clientId": "",
-	"guildId": "",
-	"ownerId": "",
-	"NOTIFY_CHANNEL": "",
-	"Reading_Channel": "",
-	"Reading_Role_Id": "",
-	"Voice_Channel_Id": "",
-	"If_Reding": true,
-	"If_Notify_Status_Voice_Channel": true,
-	"VOICEVOX_API_URL": "http://voicevox:50021",
-	"VOICEVOX_Speaker_Id": "3",
-	"VOICEVOX_isAuth": false,
-	"VOICEVOX_API_TOKEN": ""
-}
-
-```
-
 ## さくらのAI EngineをこのBOTで使う方法
 さくらのAI Engine側の設定は、[公式ドキュメント](https://manual.sakura.ad.jp/cloud/ai-engine/02-howto.html)を参照してください。
 
-`config.json`を書き換えるだけで動作します。なお、docker composeによってVOICEVOXのエンジンが自動起動するので、いらない人は無効化しておいてください。
+環境変数を書き換えるだけで動作します。なお、docker composeによってVOICEVOXのエンジンが自動起動するので、いらない人は無効化しておいてください。
 
-`config.json`の`"VOICEVOX_API_URL"`にさくらのAI Engine 音声の読み上げ VOICEVOX形式のURLを指定してください。
+`VOICEVOX_API_URL`にさくらのAI Engine 音声の読み上げ VOICEVOX形式のURLを指定してください。
 
 以下が例です。
 
 ```
-"VOICEVOX_API_URL": "https://api.ai.sakura.ad.jp/tts/v1"
+VOICEVOX_API_URL: https://api.ai.sakura.ad.jp/tts/v1
 ```
 
-また、`"VOICEVOX_isAuth"`を`true`に変更し、`"VOICEVOX_API_TOKEN"`にアカウントトークンを指定してください。
+また、`VOICEVOX_isAuth`を`true`に変更し、`VOICEVOX_API_TOKEN`にアカウントトークンを指定してください。
 
 これだけで音声合成をさくらのAI Engineに任せることができます。
 

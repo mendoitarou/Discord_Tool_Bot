@@ -3,6 +3,11 @@ const { joinVoiceChannel, getVoiceConnection, StreamType } = require('@discordjs
 
 const { guildId, Voice_Channel_Id, Reading_Role_Id, VOICEVOX_Speaker_Id } = require('../../config.json');
 
+const guildId = process.env.guildId;
+const Voice_Channel_Id = process.env.Voice_Channel_Id;
+const Reading_Role_Id = process.env.Reading_Role_Id;
+const VOICEVOX_Speaker_Id = process.env.VOICEVOX_Speaker_Id;
+
 const voicevox = require('../../VOICEVOX.js');
 const player = require('../../Playing_VoiceChannel.js');
 
