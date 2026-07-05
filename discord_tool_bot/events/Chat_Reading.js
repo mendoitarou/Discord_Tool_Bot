@@ -18,7 +18,7 @@ function countGrapheme(string) {
 function replaceText(text, max_length) {
     const segmenter = new Intl.Segmenter(`${Language}`, { granularity: "grapheme" });
     const segment_text = [...segmenter.segment(text)];
-    return segment_text.slice(0, max_length).join('');// 結合
+    return segment_text.slice(0, max_length).map(s => s.segment).join('');// 結合(segment_textはObjectなので、segmentを取り出して処理)
 }
 
 // Queue
