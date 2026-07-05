@@ -4,11 +4,7 @@ const fs = require('fs');
 const { Events } = require('discord.js');
 const { getVoiceConnection } = require('@discordjs/voice');
 
-const guildId = process.env.guildId;
-const Reading_Channel = process.env.Reading_Channel;
-const If_Reding = process.env.If_Reding;
-const Reading_Role_Id = process.env.Reading_Role_Id;
-const VOICEVOX_Speaker_Id = process.env.VOICEVOX_Speaker_Id;
+const { guildId, Reading_Channel, If_Reding, Reading_Role_Id, VOICEVOX_Speaker_Id } = process.env;
 
 const voicevox = require('../VOICEVOX.js');
 const player = require('../Playing_VoiceChannel.js');

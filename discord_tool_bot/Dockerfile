@@ -4,7 +4,6 @@ WORKDIR /app
 
 # File Copy
 COPY package*.json ./
-COPY config.json ./
 COPY events/ ./
 COPY commands/ ./
 COPY * ./

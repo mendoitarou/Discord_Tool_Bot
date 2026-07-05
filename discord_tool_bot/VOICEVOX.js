@@ -3,7 +3,7 @@ const https = require('https');
 const fs = require('fs');
 const crypto = require("crypto");
 
-const { VOICEVOX_API_URL, VOICEVOX_isAuth, VOICEVOX_API_TOKEN } = require('./config.json');
+const { VOICEVOX_API_URL, VOICEVOX_isAuth, VOICEVOX_API_TOKEN } = process.env;
 
 function generate(text, speaker_Id, wavId) {
     // クエリの作成

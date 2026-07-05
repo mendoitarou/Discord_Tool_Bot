@@ -1,8 +1,7 @@
 const { SlashCommandBuilder, MessageFlags, PermissionFlagsBits } = require('discord.js');
 const { getVoiceConnection } = require('@discordjs/voice');
 
-const ownerId = process.env.ownerId;
-const guildId = process.env.guildId;
+const { ownerId, guildId } = process.env;
 
 module.exports = {
 	data: new SlashCommandBuilder()
