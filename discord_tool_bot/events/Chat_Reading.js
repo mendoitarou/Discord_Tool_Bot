@@ -4,10 +4,22 @@ const fs = require('fs');
 const { Events } = require('discord.js');
 const { getVoiceConnection } = require('@discordjs/voice');
 
-const { guildId, Reading_Channel, If_Reding, Reading_Role_Id, VOICEVOX_Speaker_Id } = process.env;
+const { guildId, Reading_Channel, If_Reding, Reading_Role_Id, VOICEVOX_Speaker_Id, MAX_TEXT_LENGTH, Language } = process.env;
 
 const voicevox = require('../VOICEVOX.js');
 const player = require('../Playing_VoiceChannel.js');
+
+// Text Length
+function countGrapheme(string) {
+  const segmenter = new Intl.Segmenter(`${Language}`, { granularity: "grapheme" });
+  return [...segmenter.segment(string)].length;
+}
+
+function replaceText(text, max_length) {
+    const segmenter = new Intl.Segmenter(`${Language}`, { granularity: "grapheme" });
+    const segment_text = [...segmenter.segment(text)];
+    return segment_text.slice(0, max_length).map(s => s.segment).join('');// 結合(segment_textはObjectなので、segmentを取り出して処理)
+}
 
 // Queue
 const queues = new Map();
@@ -150,6 +162,7 @@ module.exports = {
                 } else {
                     // 普通にメッセージだったら
                     let receive_Message = message;
+                    receive_Message = receive_Message.replace(/\r?\n/g, '、');// 改行コードを「、」に変換
                     if(checkUserId(receive_Message)) {// ユーザIDチェック
                         receive_Message = await replaceUserId(receive_Message);
                     }
@@ -163,7 +176,11 @@ module.exports = {
                     if(checkMarkOnly(receive_Message)) {// 感嘆符/疑問符のみで構成されている
                         receive_Message = replaceBikkuri_QuestionMark(receive_Message);
                     }
-                    text = `${member.displayName}さんのメッセージ、${receive_Message.replace(/r?n/g, '、')}`;// 最終的なメッセージを指定
+                    // 文字数チェック
+                    if(countGrapheme > MAX_TEXT_LENGTH) {
+                        receive_Message = replaceText(receive_Message, MAX_TEXT_LENGTH) + '以下略';// 文字列を変換
+                    }
+                    text = `${member.displayName}さんのメッセージ、${receive_Message}`;// 最終的なメッセージを指定
                 }
                 console.log(`Text: ${text}`);
             }

@@ -132,7 +132,7 @@ module.exports = {
 				const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
 				if (resource === "Error") return;
 				// ボイスチャットでの再生処理
-				player.play_resource(voicechannel_connection);
+				player.play_resource(voicechannel_connection, './output_'+resource+'.wav');
 
 				// メッセージ送信
 				await interaction.reply({ content: 'テスト音声を再生します。(生成あり)', flags: MessageFlags.Ephemeral });
