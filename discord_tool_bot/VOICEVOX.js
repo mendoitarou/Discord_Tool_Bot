@@ -1,8 +1,9 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const crypto = require("crypto");
 
-const { VOICEVOX_API_URL } = require('./config.json');
+const { VOICEVOX_API_URL, VOICEVOX_isAuth, VOICEVOX_API_TOKEN } = require('./config.json');
 
 function generate(text, speaker_Id, wavId) {
     // クエリの作成
@@ -14,8 +15,12 @@ function generate(text, speaker_Id, wavId) {
                     "accept": "application/json",
                 },
             };
+            if (VOICEVOX_isAuth) {
+                options_audio_query.headers.Authorization = `Bearer ${VOICEVOX_API_TOKEN}`;
+            }
             url_audio_query = VOICEVOX_API_URL + `/audio_query?text=${encodeURIComponent(text)}&speaker=${speaker_Id}`;
-            const request_audio_query = http.request(url_audio_query, options_audio_query, (res_audio_query) => {
+            const client = VOICEVOX_API_URL.startsWith('https://') ? https : http;// URLがHTTPかHTTPSか判別(使うモジュールを分ける)
+            const request_audio_query = client.request(url_audio_query, options_audio_query, (res_audio_query) => {
                 res_audio_query.setEncoding('utf8');
                 let responseBody = '';
                 res_audio_query.on('data', (chunk) => {
@@ -32,12 +37,25 @@ function generate(text, speaker_Id, wavId) {
                             "Content-Type": "application/json",
                         },
                     };
+                    if (VOICEVOX_isAuth) {
+                        options_synthesis.headers.Authorization = `Bearer ${VOICEVOX_API_TOKEN}`;
+                    }
                     url_synthesis = VOICEVOX_API_URL + `/synthesis?speaker=${speaker_Id}&enable_interrogative_upspeak=true`;
-                    const request_synthesis = http.request(url_synthesis, options_synthesis, (res_synthesis) => {
-                        res_synthesis.pipe(fs.createWriteStream(`./output_${wavId}.wav`));
+                    const request_synthesis = client.request(url_synthesis, options_synthesis, (res_synthesis) => {
+                        const fs_write = fs.createWriteStream(`./output_${wavId}.wav`);
+                        res_synthesis.pipe(fs_write);
                         //console.log("[VOICEVOX.js]Done_Generate");
-                        resolve('OK');
+                        //resolve('OK');
+                        fs_write.on('finish', () => {
+                            resolve(wavId);
+                        });
+
+                        fs_write.on('error', (err) => {
+                            console.log(err);
+                            reject(err);
+                        });
                     });
+
                     request_synthesis.write(Audio_Query_Response);
                     request_synthesis.end();
                 });

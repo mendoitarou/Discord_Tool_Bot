@@ -64,10 +64,29 @@ docker compose up -d --build
 	"If_Reding": true,
 	"If_Notify_Status_Voice_Channel": true,
 	"VOICEVOX_API_URL": "http://voicevox:50021",
-	"VOICEVOX_Speaker_Id": "3"
+	"VOICEVOX_Speaker_Id": "3",
+	"VOICEVOX_isAuth": false,
+	"VOICEVOX_API_TOKEN": ""
 }
 
 ```
+
+## さくらのAI EngineをこのBOTで使う方法
+さくらのAI Engine側の設定は、[公式ドキュメント](https://manual.sakura.ad.jp/cloud/ai-engine/02-howto.html)を参照してください。
+
+`config.json`を書き換えるだけで動作します。なお、docker composeによってVOICEVOXのエンジンが自動起動するので、いらない人は無効化しておいてください。
+
+`config.json`の`"VOICEVOX_API_URL"`にさくらのAI Engine 音声の読み上げ VOICEVOX形式のURLを指定してください。
+
+以下が例です。
+
+```
+"VOICEVOX_API_URL": "https://api.ai.sakura.ad.jp/tts/v1"
+```
+
+また、`"VOICEVOX_isAuth"`を`true`に変更し、`"VOICEVOX_API_TOKEN"`にアカウントトークンを指定してください。
+
+これだけで音声合成をさくらのAI Engineに任せることができます。
 
 ## 使用させていただいたもの
 
