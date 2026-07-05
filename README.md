@@ -73,6 +73,11 @@ VOICEVOX_API_URL: https://api.ai.sakura.ad.jp/tts/v1
 
 また、`VOICEVOX_isAuth`を`true`に変更し、`VOICEVOX_API_TOKEN`にアカウントトークンを指定してください。
 
+```
+VOICEVOX_isAuth: true
+VOICEVOX_API_TOKEN: '~~~~~~~~~~~'
+```
+
 これだけで音声合成をさくらのAI Engineに任せることができます。
 
 ## 使用させていただいたもの
