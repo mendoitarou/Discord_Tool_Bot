@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, MessageFlags, InteractionContextType } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection, StreamType } = require('@discordjs/voice');
 
-const { guildId, Voice_Channel_Id, Reading_Role_Id, VOICEVOX_Speaker_Id } = require('../../config.json');
+const { guildId, Voice_Channel_Id, Reading_Role_Id, VOICEVOX_Speaker_Id } = process.env;
 
 const voicevox = require('../../VOICEVOX.js');
 const player = require('../../Playing_VoiceChannel.js');

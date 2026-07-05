@@ -4,7 +4,7 @@ const fs = require('fs');
 const { Events } = require('discord.js');
 const { getVoiceConnection } = require('@discordjs/voice');
 
-const { guildId, Reading_Channel, If_Reding, Reading_Role_Id, VOICEVOX_Speaker_Id } = require('../config.json');
+const { guildId, Reading_Channel, If_Reding, Reading_Role_Id, VOICEVOX_Speaker_Id } = process.env;
 
 const voicevox = require('../VOICEVOX.js');
 const player = require('../Playing_VoiceChannel.js');
@@ -38,7 +38,9 @@ async function playNext(guildid) {
         // 音声合成
         const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
         if (resource === "Error") continue; // エラーが置きたらスキップ
+        console.log('start_play');
         await player.play_resource(voicechannel_connection, './output_'+resource+'.wav');  // 読み上げ完了まで待機
+        console.log('end_play');
     }
 
     isPlaying = false;

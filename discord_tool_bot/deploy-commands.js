@@ -1,7 +1,8 @@
 /* ほぼ公式チュートリアルまんま */
 
 const { REST, Routes } = require('discord.js');
-const { DISCORD_BOT_TOKEN, clientId, guildId } = require('./config.json');
+const { DISCORD_BOT_TOKEN, clientId, guildId } = process.env;
+
 const fs = require('node:fs');
 const path = require('node:path');
 
