@@ -46,9 +46,9 @@ function generate(text, speaker_Id, wavId) {
                             // Many Request(無償枠超えなど)
                             console.log('API Reject 429 Too Many Request.');
                             reject("Error");
-                        } else {res_synthesis.statusCode != 200} {
+                        } else if(res_synthesis.statusCode != 200) {
                             // その他の正常でないステータスコード
-                            console.log('API Reject Not 200');
+                            console.log(`API Reject Not 200, StatusCode: ${res_synthesis.statusCode}`);
                             reject("Error");
                         }
                         const fs_write = fs.createWriteStream(`./output_${wavId}.wav`);
