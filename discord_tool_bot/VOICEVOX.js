@@ -52,7 +52,7 @@ function generate(text, speaker_Id, wavId) {
 
                         fs_write.on('error', (err) => {
                             console.log(err);
-                            reject(err);
+                            reject("Error");
                         });
                     });
 

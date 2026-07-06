@@ -35,7 +35,7 @@ async function playNext(guildid) {
     // チェック
     let isPlaying = playingState.get(guildid);
     if (isPlaying) return;
-    let queue_list = queues.get(guildid);
+    const queue_list = queues.get(guildid);
     if (queue_list.length === 0) return;
 
     isPlaying = true; // 再生中のフラグを立てる
@@ -50,7 +50,7 @@ async function playNext(guildid) {
         // 音声合成
         const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
         if (resource === "Error") continue; // エラーが置きたらスキップ
-        console.log('start_play');
+        console.log(`start_play(WavID: ${resource})`);
         await player.play_resource(voicechannel_connection, './output_'+resource+'.wav');  // 読み上げ完了まで待機
         console.log('end_play');
     }
@@ -177,7 +177,7 @@ module.exports = {
                         receive_Message = replaceBikkuri_QuestionMark(receive_Message);
                     }
                     // 文字数チェック
-                    if(countGrapheme > MAX_TEXT_LENGTH) {
+                    if(countGrapheme(receive_Message) >= MAX_TEXT_LENGTH) {
                         receive_Message = replaceText(receive_Message, MAX_TEXT_LENGTH) + '以下略';// 文字列を変換
                     }
                     text = `${member.displayName}さんのメッセージ、${receive_Message}`;// 最終的なメッセージを指定

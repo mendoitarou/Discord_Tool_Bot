@@ -16,9 +16,15 @@ function play_resource(voicechannel_connection, source = './output.wav') {
         player.play(resource);
         const subscriber = voicechannel_connection.subscribe(player);
         
-        // 待機
+        // イベントフック
+        player.on(AudioPlayerStatus.Playing, () => {
+            // 再生開始
+            //console.log("[Playing_VoiceChannel.js]Change_Status-Playing");
+        });
+
         player.on(AudioPlayerStatus.Idle, () => {
             // 再生が終わったので解除
+            //console.log("[Playing_VoiceChannel.js]Change_Status-Idle");
             subscriber.unsubscribe();
             fs.unlinkSync(source); // ファイル削除
             resolve();

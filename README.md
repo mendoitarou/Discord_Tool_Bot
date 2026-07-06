@@ -21,6 +21,8 @@ Docker Compose使います。
 
 `docker-compose.yaml`に環境変数を設定します。
 
+トークンなどは`.env`ファイルに設定します。
+
 コマンド一発で自動でいろいろやってくれます。
 
 ```shell
