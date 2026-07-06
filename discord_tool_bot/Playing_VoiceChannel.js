@@ -15,10 +15,20 @@ function play_resource(voicechannel_connection, source = './output.wav') {
         // 再生開始
         player.play(resource);
         const subscriber = voicechannel_connection.subscribe(player);
+        let isplaying = false;
         
-        // 待機
+        // イベントフック
+        player.on(AudioPlayerStatus.Playing, () => {
+            // 再生開始
+            //console.log("[Playing_VoiceChannel.js]Change_Status-Playing");
+            isplaying = true;
+        });
+
         player.on(AudioPlayerStatus.Idle, () => {
+            if(!isplaying) return; // まだPlayingになってない
             // 再生が終わったので解除
+            //console.log("[Playing_VoiceChannel.js]Change_Status-Idle");
+            isplaying = false;
             subscriber.unsubscribe();
             fs.unlinkSync(source); // ファイル削除
             resolve();

@@ -42,6 +42,15 @@ function generate(text, speaker_Id, wavId) {
                     }
                     url_synthesis = VOICEVOX_API_URL + `/synthesis?speaker=${speaker_Id}&enable_interrogative_upspeak=true`;
                     const request_synthesis = client.request(url_synthesis, options_synthesis, (res_synthesis) => {
+                        if(res_synthesis.statusCode == 429) {
+                            // Many Request(無償枠超えなど)
+                            console.log('API Reject 429 Too Many Request.');
+                            reject("Error");
+                        } else {res_synthesis.statusCode != 200} {
+                            // その他の正常でないステータスコード
+                            console.log('API Reject Not 200');
+                            reject("Error");
+                        }
                         const fs_write = fs.createWriteStream(`./output_${wavId}.wav`);
                         res_synthesis.pipe(fs_write);
                         //console.log("[VOICEVOX.js]Done_Generate");
@@ -52,7 +61,7 @@ function generate(text, speaker_Id, wavId) {
 
                         fs_write.on('error', (err) => {
                             console.log(err);
-                            reject(err);
+                            reject("Error");
                         });
                     });
 
