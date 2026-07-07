@@ -11,8 +11,8 @@ const player = require('../Playing_VoiceChannel.js');
 
 // Text Length
 function countGrapheme(string) {
-  const segmenter = new Intl.Segmenter(`${Language}`, { granularity: "grapheme" });
-  return [...segmenter.segment(string)].length;
+    const segmenter = new Intl.Segmenter(`${Language}`, { granularity: "grapheme" });
+    return [...segmenter.segment(string)].length;
 }
 
 function replaceText(text, max_length) {
@@ -26,6 +26,16 @@ const queues = new Map();
 const playingState = new Map();
 
 function enqueue(guildid, text) {
+    // Mapにサーバの情報があるかチェック
+    if (!queues.has(guildid)) {
+        // 持ってない
+        queues.set(guildid, []); // 配列セット
+    }
+    if (!playingState.has(guildid)) {
+        // 持ってない
+        playingState.set(guildid, false); // booleanセット
+    }
+    // キューに追加し読みあげ処理
     const queue_list = queues.get(guildid);
     queue_list.push(text);
     playNext(guildid);
@@ -40,23 +50,28 @@ async function playNext(guildid) {
 
     isPlaying = true; // 再生中のフラグを立てる
     playingState.set(guildid, isPlaying); // Mapの方に適用する
-    
-    // 読み上げ準備
-    const voicechannel_connection = getVoiceConnection(guildId);// ボイスチャンネルのコネクションを取得
-    if (voicechannel_connection === undefined) return;
-    
-    while (queue_list.length > 0) { // キュー消化
-        const text = queue_list.shift();
-        // 音声合成
-        const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
-        if (resource === "Error") continue; // エラーが置きたらスキップ
-        console.log(`start_play(WavID: ${resource})`);
-        await player.play_resource(voicechannel_connection, './output_'+resource+'.wav');  // 読み上げ完了まで待機
-        console.log('end_play');
-    }
 
-    isPlaying = false;
-    playingState.set(guildid, isPlaying); // Mapの方に適用する
+    try {
+        // 読み上げ準備
+        const voicechannel_connection = getVoiceConnection(guildId);// ボイスチャンネルのコネクションを取得
+        if (voicechannel_connection === undefined) return;
+
+        while (queue_list.length > 0) { // キュー消化
+            const text = queue_list.shift();
+            // 音声合成
+            const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
+            if (resource === "Error") continue; // エラーが置きたらスキップ
+            console.log(`start_play(WavID: ${resource})`);
+            await player.play_resource(voicechannel_connection, './output_' + resource + '.wav');  // 読み上げ完了まで待機
+            console.log('end_play');
+        }
+    } catch(err) {
+        console.log(err);
+    } finally {
+        // エラーでも必ず最後に実行される
+        isPlaying = false;
+        playingState.set(guildid, isPlaying); // Mapの方に適用する
+    }
 }
 
 module.exports = {
@@ -89,10 +104,10 @@ module.exports = {
                 function checkURL(receiveMessage) { return (receiveMessage.match(regex_URL) !== null) }
                 function checkNotReadFlag(receive_Message) { return (receive_Message.match(regex_notreadflag) !== null) }
                 function checkIgnoreFlag(receive_Message) { return (receive_Message.match(regex_ignoreflag) !== null) }
-                function checkUserId(receiveMessage) { return (receiveMessage.match(regex_UserId) !== null ) }
+                function checkUserId(receiveMessage) { return (receiveMessage.match(regex_UserId) !== null) }
                 async function replaceUserId(receiveMessage) {
                     // ユーザID置き換え
-                    if(checkUserId(receiveMessage)) {
+                    if (checkUserId(receiveMessage)) {
                         await receiveMessage.match(regex_UserId).forEach(async get_UserId => {// forEachは非同期処理？みたいなのでawaitする
                             // メンション箇所ごとに実行
                             let User_Id = get_UserId.replace("<@", "").replace(">", "");// ユーザIDのみに加工
@@ -105,10 +120,10 @@ module.exports = {
                     }
                 }
 
-                function checkRoleId(receiveMessage) { return (receiveMessage.match(regex_RoleId) !== null ) }
+                function checkRoleId(receiveMessage) { return (receiveMessage.match(regex_RoleId) !== null) }
                 async function replaceRoleId(receiveMessage) {
                     // ロールID置き換え
-                    if(checkRoleId(receiveMessage)) {
+                    if (checkRoleId(receiveMessage)) {
                         // ロール検知
                         await receiveMessage.match(regex_RoleId).forEach(async get_RoleId => {// forEachは非同期処理？みたいなのでawaitする
                             let Role_Id = get_RoleId.replace("<@&", "").replace(">", "");// ロールIDのみに加工
@@ -121,12 +136,12 @@ module.exports = {
                     }
                 }
 
-                function checkUserEmoji(receiveMessage) { return (receiveMessage.match(regex_emoji) !== null ) }
+                function checkUserEmoji(receiveMessage) { return (receiveMessage.match(regex_emoji) !== null) }
                 function replaceUserEmoji(receiveMessage) {
                     // 絵文字置き換え
-                    if(checkUserEmoji(receiveMessage)) {
+                    if (checkUserEmoji(receiveMessage)) {
                         // 絵文字検知
-                        if(receiveMessage.match(regex_emoji) !== null) {
+                        if (receiveMessage.match(regex_emoji) !== null) {
                             return receiveMessage.replace(regex_emoji, '絵文字');// 置き換えたものを返す
                         }
                     } else {
@@ -137,15 +152,15 @@ module.exports = {
                 function checkMarkOnly(receive_Message) { return (receive_Message.match(regex_mark_only) !== null) }
                 function replaceBikkuri_QuestionMark(receive_Message) {
                     // 感嘆符/疑問符置き換え
-                    if(checkMarkOnly(receive_Message)) {
+                    if (checkMarkOnly(receive_Message)) {
                         // 感嘆符/疑問符のみで構成されている
                         const hasBikkuri = regex_bikkuri_mark.test(receive_Message);
                         const hasQestion = regex_question_mark.test(receive_Message);
-                        if(hasBikkuri && hasQestion) {
+                        if (hasBikkuri && hasQestion) {
                             return "(感嘆符)(疑問符)";// 感嘆符と疑問符が含まれているので、置き換えて返す
-                        } else if(hasBikkuri) {
+                        } else if (hasBikkuri) {
                             return "(感嘆符)";// 感嘆符だけが含まれているので、置き換えて返す
-                        } else if(hasQestion) {
+                        } else if (hasQestion) {
                             return "(疑問符)";// 疑問符だけが含まれているので、置き換えて返す
                         }
                     } else {
@@ -154,8 +169,8 @@ module.exports = {
                 }
 
                 // 正規表現でチェック
-                if(checkIgnoreFlag(message)) return;// 無視するフラグがついてたら
-                if(checkURL(message)) {// URLが含まれているかチェック
+                if (checkIgnoreFlag(message)) return;// 無視するフラグがついてたら
+                if (checkURL(message)) {// URLが含まれているかチェック
                     text = `${member.displayName}さんがURLを送信しました。`;
                 } else if (checkNotReadFlag(message)) {// 読み上げしないフラグがついてるかチェック
                     text = `${member.displayName}さんがテキストメッセージを送信しました。`;
@@ -163,36 +178,26 @@ module.exports = {
                     // 普通にメッセージだったら
                     let receive_Message = message;
                     receive_Message = receive_Message.replace(/\r?\n/g, '、');// 改行コードを「、」に変換
-                    if(checkUserId(receive_Message)) {// ユーザIDチェック
+                    if (checkUserId(receive_Message)) {// ユーザIDチェック
                         receive_Message = await replaceUserId(receive_Message);
                     }
-                    if(checkRoleId(receive_Message)) {// ロールIDチェック
+                    if (checkRoleId(receive_Message)) {// ロールIDチェック
                         receive_Message = await replaceRoleId(receive_Message);
                     }
-                    if(checkUserEmoji(receive_Message)) {// ユーザー絵文字チェック
+                    if (checkUserEmoji(receive_Message)) {// ユーザー絵文字チェック
                         receive_Message = replaceUserEmoji(receive_Message);
                     }
                     // 感嘆符/疑問符チェック
-                    if(checkMarkOnly(receive_Message)) {// 感嘆符/疑問符のみで構成されている
+                    if (checkMarkOnly(receive_Message)) {// 感嘆符/疑問符のみで構成されている
                         receive_Message = replaceBikkuri_QuestionMark(receive_Message);
                     }
                     // 文字数チェック
-                    if(countGrapheme(receive_Message) >= MAX_TEXT_LENGTH) {
+                    if (countGrapheme(receive_Message) >= MAX_TEXT_LENGTH) {
                         receive_Message = replaceText(receive_Message, MAX_TEXT_LENGTH) + '以下略';// 文字列を変換
                     }
                     text = `${member.displayName}さんのメッセージ、${receive_Message}`;// 最終的なメッセージを指定
                 }
                 console.log(`Text: ${text}`);
-            }
-
-            // Mapにサーバの情報があるかチェック
-            if ( !queues.has(guildId) ) {
-                // 持ってない
-                queues.set(guildId, []); // 配列セット
-            }
-            if ( !playingState.has(guildId) ) {
-                // 持ってない
-                playingState.set(guildId, false); // booleanセット
             }
 
             // ボイスチャットでの再生処理
