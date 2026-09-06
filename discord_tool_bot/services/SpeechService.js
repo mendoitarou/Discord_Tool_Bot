@@ -28,7 +28,7 @@ class SpeechService {
         // 音声合成するかどうか
         if (isGenerate) {
             // 音声合成
-            text = 'これはテスト音声です。';
+            const text = 'これはテスト音声です。';
             const resource = await voicevox.voicevox_generate_voice(text, speakerId);
             if (resource === "Error") return; // エラーが置きたらスキップ
             resourcePath = './output_' + resource + '.wav';

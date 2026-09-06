@@ -146,7 +146,7 @@ module.exports = {
 
             // ボイスチャットでの再生処理
             services.speechQueue.add(guildId, text);
-            services.speechQueue.start();
+            services.speechQueue.start(guildId);
         } else {
             // 非対象者(一個ずつ確認するらしく、何回か呼ばれていると思われる)
             return;

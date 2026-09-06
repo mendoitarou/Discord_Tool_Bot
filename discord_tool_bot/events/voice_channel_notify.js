@@ -19,6 +19,7 @@ module.exports = {
                     .setAuthor({ name: `${oldState.member.user.username}`, iconURL: `${oldState.member.user.avatarURL()}` })
                     .setTimestamp()
                     .setColor('Green')
+                console.log(oldState.member.user);
                 return channel.send(
                     { content: "@here", embeds: [MessageEmbedStart] }
                 )
@@ -37,7 +38,7 @@ module.exports = {
 
                         // ボイスチャットでの再生処理
                         services.speechQueue.add(guildId, text);
-                        services.speechQueue.start();
+                        services.speechQueue.start(guildId);
                     }
                 }
                 return channel.send(
@@ -67,7 +68,7 @@ module.exports = {
 
                     // ボイスチャットでの再生処理
                     services.speechQueue.add(guildId, text);
-                    services.speechQueue.start();
+                    services.speechQueue.start(guildId);
                 }
             }
             return channel.send(

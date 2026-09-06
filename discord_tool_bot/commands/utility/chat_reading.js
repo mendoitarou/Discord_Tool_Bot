@@ -73,11 +73,12 @@ module.exports = {
 			await interaction.reply({ content: `読み上げbotを<#${Voice_Channel_Id}>に接続しました。` });
 		} else if (interaction.options.getSubcommand() === 'disconnect') {
 			if (services.speechService.check(guildId)) {
-				await interaction.reply({ content: `読み上げbotは接続されていません。` });
-				return;
-			} else {
 				services.speechQueue.destroy(guildId);
 				await interaction.reply({ content: `読み上げbotを切断しました。` });
+				
+			} else {
+				await interaction.reply({ content: `読み上げbotは接続されていません。` });
+				return;
 			}
 		} else if (interaction.options.getSubcommand() === 'change') {
 			// 対象変更コマンド(ロール付与)
