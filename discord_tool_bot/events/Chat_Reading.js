@@ -23,6 +23,7 @@ module.exports = {
         if (!If_Reding) return;// If_Reading True?
         if (interaction.guild.id !== guildId) return;// Receive guild is guildId?
         if (interaction.channelId !== Reading_Channel) return;// Receive channel is Reading_Channel?
+        if (!services.speechService.check(guildId)) return; // Is bot joined voice channel?
         const member = interaction.member;
         if (member.roles.cache.some(role => role.id === Reading_Role_Id)) {
             // 対象者
