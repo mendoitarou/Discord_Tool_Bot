@@ -41,7 +41,9 @@ class SpeechQueue {
 
     async start(guildId) {
         const queues = this.queues.get(guildId);
-        if (!queues || queues.running) return;// 無い場合やrunningがtrueの場合は終了
+        if (!queues || queues.running) return; // 無い場合やrunningがtrueの場合は終了
+
+        if(!this.speechService.check(guildId)) return; // Botがボイスチャットに接続してない場合はそのまま終了
 
         queues.running = true;
 
