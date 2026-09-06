@@ -1,4 +1,4 @@
-const { getVoiceConnection } = require('@discordjs/voice');
+const { getVoiceConnection, joinVoiceChannel } = require('@discordjs/voice');
 
 const voicevox = require('../VOICEVOX.js');
 const player = require('../Playing_VoiceChannel.js');
