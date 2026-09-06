@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, MessageFlags, PermissionFlagsBits } = require('discord.js');
-const { getVoiceConnection } = require('@discordjs/voice');
 
 const { ownerId, guildId } = process.env;
 
@@ -8,12 +7,10 @@ module.exports = {
 		.setName('shutdown')
 		.setDescription('This bot shutdown.')
         .setDefaultMemberPermissions(PermissionFlagsBits.ADMINISTRATOR),
-	async execute(interaction) {
+	async execute(interaction, { services }) {
         if (interaction.user.id === ownerId) {
-            const voicechannel_connection = getVoiceConnection(guildId);
-            if (voicechannel_connection !== undefined) {
-                // ボイスチャンネルから切断
-                voicechannel_connection.destroy();
+            if(services.speechService.check(guildId)) { // ボイスチャットに接続してるか
+                services.speechQueue.destroy(guildId); // ボイスチャットから切断
             }
             await interaction.reply({content: '停止します。', flags: MessageFlags.Ephemeral});
             await process.exit();

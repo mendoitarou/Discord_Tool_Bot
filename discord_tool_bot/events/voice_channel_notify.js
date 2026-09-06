@@ -1,14 +1,10 @@
 const { Events, EmbedBuilder } = require('discord.js');
-const { getVoiceConnection } = require('@discordjs/voice');
 
-const { guildId, NOTIFY_CHANNEL, If_Notify_Status_Voice_Channel, VOICEVOX_Speaker_Id } = process.env;
-
-const voicevox = require('../VOICEVOX.js');
-const player = require('../Playing_VoiceChannel.js');
+const { guildId, NOTIFY_CHANNEL, If_Notify_Status_Voice_Channel } = process.env;
 
 module.exports = {
     name: Events.VoiceStateUpdate,
-    async execute(oldState, newState, client) {
+    async execute(oldState, newState, { client, services }) {
         if (oldState.guild.id !== guildId) return;
         if (oldState.member.user.bot) return;// Bot検知
         const channel = oldState.member.guild.channels.cache.get(
@@ -16,7 +12,7 @@ module.exports = {
         );
 
         if (oldState.channelId === null && newState.channelId !== null) {
-            if(newState.channel.members.size == 1) {
+            if (newState.channel.members.size == 1) {
                 // 一人目だった場合
                 const MessageEmbedStart = new EmbedBuilder()
                     .setDescription(`${oldState.member.user} さんが通話を開始しました。`)
@@ -35,16 +31,13 @@ module.exports = {
                     .setColor('Green')
                 if (If_Notify_Status_Voice_Channel == true) {// ボイスチャンネルで通知するかどうかをチェック
                     // ボイスチャンネルに接続されているか確認
-                    const voicechannel_connection = getVoiceConnection(guildId);
-                    if (voicechannel_connection !== undefined) {
+                    if (services.speechService.check(guildId)) {
                         // 接続状態のみ、音声通知をする。
                         text = `${oldState.member.displayName}さんが入室しました。`
 
-                        // VOICEVOXにて音声を合成
-                        const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
-                        if (resource === "Error") return;
                         // ボイスチャットでの再生処理
-                        player.play_resource(voicechannel_connection);
+                        services.speechQueue.add(guildId, text);
+                        services.speechQueue.start();
                     }
                 }
                 return channel.send(
@@ -54,12 +47,10 @@ module.exports = {
             }
         } else if (oldState.channelId !== null && newState.channelId === null) {
             const botMember = oldState.client.guilds.cache.get(guildId).members.cache.get(client.user.id);// BOTの通話参加状態を取得
-            if(oldState.channel.members.size == 1) {// 残り人数が1名の時(BOTのみなど)
-                if(botMember && botMember.voice.channel && oldState.channelId === botMember.voice.channel.id) {// BOTが通話に参加しているとき
+            if (oldState.channel.members.size == 1) {// 残り人数が1名の時(BOTのみなど)
+                if (botMember && botMember.voice.channel && oldState.channelId === botMember.voice.channel.id) {// BOTが通話に参加しているとき
                     // BOTだけしか通話に残っていない場合、自動で切断する。
-                    const voicechannel_connection = getVoiceConnection(guildId);
-                    voicechannel_connection.destroy();
-                    //botMember.voice.disconnect();
+                    services.speechQueue.destroy(guildId);
                     channel.send(`BOT以外の参加ユーザが全員切断したため、読み上げbotを切断しました。`)
                 }
             }
@@ -70,16 +61,13 @@ module.exports = {
                 .setColor('Red')
             if (If_Notify_Status_Voice_Channel === true) {// ボイスチャンネルで通知するかどうかをチェック
                 // ボイスチャンネルに接続されているか確認
-                const voicechannel_connection = getVoiceConnection(guildId);
-                if (voicechannel_connection !== undefined) {
+                if (services.speechService.check(guildId)) {
                     // 接続状態のみ、音声通知をする。
                     text = `${oldState.member.displayName}さんが退室しました。`
 
-                    // VOICEVOXにて音声を合成
-                    const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
-                    if (resource === "Error") return;
                     // ボイスチャットでの再生処理
-                    player.play_resource(voicechannel_connection);
+                    services.speechQueue.add(guildId, text);
+                    services.speechQueue.start();
                 }
             }
             return channel.send(

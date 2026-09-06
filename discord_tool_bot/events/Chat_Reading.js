@@ -2,12 +2,8 @@ const http = require('http');
 const fs = require('fs');
 
 const { Events } = require('discord.js');
-const { getVoiceConnection } = require('@discordjs/voice');
 
-const { guildId, Reading_Channel, If_Reding, Reading_Role_Id, VOICEVOX_Speaker_Id, MAX_TEXT_LENGTH, Language } = process.env;
-
-const voicevox = require('../VOICEVOX.js');
-const player = require('../Playing_VoiceChannel.js');
+const { guildId, Reading_Channel, If_Reding, Reading_Role_Id, MAX_TEXT_LENGTH, Language } = process.env;
 
 // Text Length
 function countGrapheme(string) {
@@ -21,62 +17,9 @@ function replaceText(text, max_length) {
     return segment_text.slice(0, max_length).map(s => s.segment).join('');// 結合(segment_textはObjectなので、segmentを取り出して処理)
 }
 
-// Queue
-const queues = new Map();
-const playingState = new Map();
-
-function enqueue(guildid, text) {
-    // Mapにサーバの情報があるかチェック
-    if (!queues.has(guildid)) {
-        // 持ってない
-        queues.set(guildid, []); // 配列セット
-    }
-    if (!playingState.has(guildid)) {
-        // 持ってない
-        playingState.set(guildid, false); // booleanセット
-    }
-    // キューに追加し読みあげ処理
-    const queue_list = queues.get(guildid);
-    queue_list.push(text);
-    playNext(guildid);
-}
-
-async function playNext(guildid) {
-    // チェック
-    let isPlaying = playingState.get(guildid);
-    if (isPlaying) return;
-    const queue_list = queues.get(guildid);
-    if (queue_list.length === 0) return;
-
-    isPlaying = true; // 再生中のフラグを立てる
-    playingState.set(guildid, isPlaying); // Mapの方に適用する
-
-    try {
-        // 読み上げ準備
-        const voicechannel_connection = getVoiceConnection(guildId);// ボイスチャンネルのコネクションを取得
-        if (voicechannel_connection === undefined) return;
-
-        while (queue_list.length > 0) { // キュー消化
-            const text = queue_list.shift();
-            // 音声合成
-            const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
-            if (resource === "Error") continue; // エラーが置きたらスキップ
-            console.log(`start_play(WavID: ${resource})`);
-            await player.play_resource(voicechannel_connection, './output_' + resource + '.wav');  // 読み上げ完了まで待機
-            console.log('end_play');
-        }
-    } catch(err) {
-        console.log(err);
-    } finally {
-        // エラーでも必ず最後に実行される
-        isPlaying = false;
-        playingState.set(guildid, isPlaying); // Mapの方に適用する
-    }
-}
-
 module.exports = {
     name: Events.MessageCreate,
-    async execute(interaction) {
+    async execute(interaction, { services }) {
         if (!If_Reding) return;// If_Reading True?
         if (interaction.guild.id !== guildId) return;// Receive guild is guildId?
         if (interaction.channelId !== Reading_Channel) return;// Receive channel is Reading_Channel?
@@ -201,7 +144,8 @@ module.exports = {
             }
 
             // ボイスチャットでの再生処理
-            enqueue(guildId, text);
+            services.speechQueue.add(guildId, text);
+            services.speechQueue.start();
         } else {
             // 非対象者(一個ずつ確認するらしく、何回か呼ばれていると思われる)
             return;

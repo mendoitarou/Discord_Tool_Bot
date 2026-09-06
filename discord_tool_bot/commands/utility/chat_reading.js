@@ -1,10 +1,6 @@
 const { SlashCommandBuilder, MessageFlags, InteractionContextType } = require('discord.js');
-const { joinVoiceChannel, getVoiceConnection, StreamType } = require('@discordjs/voice');
 
 const { guildId, Voice_Channel_Id, Reading_Role_Id, VOICEVOX_Speaker_Id } = process.env;
-
-const voicevox = require('../../VOICEVOX.js');
-const player = require('../../Playing_VoiceChannel.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -63,25 +59,24 @@ module.exports = {
 				.setName('reason')
 				.setDescription('The reason for banning'))*/
 		.setContexts(InteractionContextType.Guild),
-	async execute(interaction) {
+	async execute(interaction, { services }) {
 		if (interaction.options.getSubcommand() === 'available') {
 			const availability = interaction.options.getBoolean('availability');
 			await interaction.reply({ content: `This command is created now!`, flags: MessageFlags.Ephemeral });
 		} else if (interaction.options.getSubcommand() === 'connect') {
 			// 接続処理
-			const voicechannel_connection = joinVoiceChannel({
-				channelId: Voice_Channel_Id,
-				guildId: guildId,
-				adapterCreator: interaction.guild.voiceAdapterCreator,
-			});
+			services.speechService.connect(
+				guildId,
+				Voice_Channel_Id,
+				interaction.guild.voiceAdapterCreator,
+			);
 			await interaction.reply({ content: `読み上げbotを<#${Voice_Channel_Id}>に接続しました。` });
 		} else if (interaction.options.getSubcommand() === 'disconnect') {
-			const voicechannel_connection = getVoiceConnection(guildId);
-			if (voicechannel_connection === undefined) {
+			if (services.speechService.check(guildId)) {
 				await interaction.reply({ content: `読み上げbotは接続されていません。` });
 				return;
 			} else {
-				voicechannel_connection.destroy();
+				!services.speechQueue.destroy(guildId)
 				await interaction.reply({ content: `読み上げbotを切断しました。` });
 			}
 		} else if (interaction.options.getSubcommand() === 'change') {
@@ -121,28 +116,16 @@ module.exports = {
 				await interaction.reply({ content: 'あなたはチャット読み上げ対象者ではありません！', flags: MessageFlags.Ephemeral });
 			}
 		} else if (interaction.options.getSubcommand() === 'test') {
-			const generate = interaction.options.getBoolean('generate');
-			if (generate) {
-				// ボイスチャンネルに接続されているか確認
-				const voicechannel_connection = getVoiceConnection(guildId);
-				if (voicechannel_connection === undefined) return;
-				//console.log(`Receive Message: User=${member.displayName},Content=${interaction.content}`)// For Debug
-				// VOICEVOXにて音声を合成
-				text = 'これはテスト音声です。';
-				const resource = await voicevox.voicevox_generate_voice(text, VOICEVOX_Speaker_Id);
-				if (resource === "Error") return;
-				// ボイスチャットでの再生処理
-				player.play_resource(voicechannel_connection, './output_'+resource+'.wav');
+			const generate = interaction.options.getBoolean('generate'); // 引数受け取り
 
+			if(!services.speechService.check(guildId)) return; // ボイスチャットに接続されていない場合は終了
+
+			// テスト再生処理
+			services.speechService.test(guildId, VOICEVOX_Speaker_Id, generate);
+			if (generate) { // メッセージ
 				// メッセージ送信
 				await interaction.reply({ content: 'テスト音声を再生します。(生成あり)', flags: MessageFlags.Ephemeral });
 			} else {
-				const voicechannel_connection = getVoiceConnection(guildId);
-				if (voicechannel_connection === undefined) return;
-
-				// ボイスチャットでの再生処理
-				player.play_resource(voicechannel_connection, './test.wav');
-
 				// メッセージ送信
 				await interaction.reply({ content: 'テスト音声を再生します。(生成なし)', flags: MessageFlags.Ephemeral });
 			}
