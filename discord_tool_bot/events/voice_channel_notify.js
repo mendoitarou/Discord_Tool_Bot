@@ -16,7 +16,7 @@ module.exports = {
                 // 一人目だった場合
                 const MessageEmbedStart = new EmbedBuilder()
                     .setDescription(`${oldState.member.user} さんが通話を開始しました。`)
-                    .setAuthor({ name: `${oldState.member.user.username}`, iconURL: `${oldState.member.user.avatarURL()}` })
+                    .setAuthor({ name: `${oldState.member.user.username}`, iconURL: `${oldState.member.user.displayAvatarURL()}` })
                     .setTimestamp()
                     .setColor('Green')
                 return channel.send(
@@ -26,7 +26,7 @@ module.exports = {
                 // 一人目でないとき
                 const MessageEmbed = new EmbedBuilder()
                     .setDescription(`${oldState.member.user} さんが入室しました。`)
-                    .setAuthor({ name: `${oldState.member.user.username}`, iconURL: `${oldState.member.user.avatarURL()}` })
+                    .setAuthor({ name: `${oldState.member.user.username}`, iconURL: `${oldState.member.user.displayAvatarURL()}` })
                     .setTimestamp()
                     .setColor('Green')
                 if (If_Notify_Status_Voice_Channel) {// ボイスチャンネルで通知するかどうかをチェック
@@ -56,7 +56,7 @@ module.exports = {
             }
             const MessageEmbed = new EmbedBuilder()
                 .setDescription(`${oldState.member.user} さんが退室しました。`)
-                .setAuthor({ name: `${oldState.member.user.username}`, iconURL: `${oldState.member.user.avatarURL()}` })
+                .setAuthor({ name: `${oldState.member.user.username}`, iconURL: `${oldState.member.user.displayAvatarURL()}` })
                 .setTimestamp()
                 .setColor('Red')
             if (If_Notify_Status_Voice_Channel) {// ボイスチャンネルで通知するかどうかをチェック
