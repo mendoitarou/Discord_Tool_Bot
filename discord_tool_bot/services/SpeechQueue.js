@@ -36,6 +36,7 @@ class SpeechQueue {
         this.clear(guildId); // リストクリア
         this.stop(guildId); // 実行状況をリセット
         this.queues.delete(guildId); // Mapから削除
+        this.speechService.destroy(guildId); // ボイスチャットから切断
     }
 
     async start(guildId) {

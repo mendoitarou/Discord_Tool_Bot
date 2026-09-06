@@ -4,6 +4,16 @@ const voicevox = require('../VOICEVOX.js');
 const player = require('../Playing_VoiceChannel.js');
 
 class SpeechService {
+    check(guildId) {
+        const voicechannel_connection = getVoiceConnection(guildId);
+        return (voicechannel_connection !== undefined); // 接続されていない=undefined: false, 接続されている: true
+    }
+
+    destroy(guildId) {
+        const voicechannel_connection = getVoiceConnection(guildId);
+        voicechannel_connection.destroy();
+    }
+
     async speak(guildId, speakerId, item) {
         // 読み上げ準備
         const voicechannel_connection = getVoiceConnection(guildId);// ボイスチャンネルのコネクションを取得
