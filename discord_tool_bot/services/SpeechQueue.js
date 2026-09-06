@@ -32,10 +32,11 @@ class SpeechQueue {
     }
 
     destroy(guildId) {
-        if(!this.queues.get(guildId)) return; // 無い場合は終了
-        this.clear(guildId); // リストクリア
-        this.stop(guildId); // 実行状況をリセット
-        this.queues.delete(guildId); // Mapから削除
+        if(!this.queues.get(guildId)) { // キューとかが残ってるか
+            this.clear(guildId); // リストクリア
+            this.stop(guildId); // 実行状況をリセット
+            this.queues.delete(guildId); // Mapから削除
+        }
         this.speechService.destroy(guildId); // ボイスチャットから切断
     }
 
