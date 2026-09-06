@@ -4,6 +4,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 
+// 読み上げ用のサービス
+const SpeechService = require("./services/SpeechService");
+const SpeechQueue = require("./services/SpeechQueue");
+
 const { DISCORD_BOT_TOKEN } = process.env;
 
 const client = new Client({
@@ -14,6 +18,15 @@ const client = new Client({
     GatewayIntentBits.GuildVoiceStates,// ボイスチャットの入退室検知
   ]
 });
+
+// サービスのクラスを作成し、渡しやすいようにまとめておく
+const speechService = new SpeechService();
+const speechQueue = new SpeechQueue(speechService);
+
+const services = {
+    speechService,
+    speechQueue
+};
 
 // スラッシュコマンド追加処理
 client.commands = new Collection();
@@ -42,9 +55,9 @@ for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
 	const event = require(filePath);
 	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args, client));
+		client.once(event.name, (...args) => event.execute(...args, { client, services }));
 	} else {
-		client.on(event.name, (...args) => event.execute(...args, client));
+		client.on(event.name, (...args) => event.execute(...args, { client, services }));
 	}
 }
 
