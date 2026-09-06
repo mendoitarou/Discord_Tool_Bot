@@ -76,7 +76,7 @@ module.exports = {
 				await interaction.reply({ content: `読み上げbotは接続されていません。` });
 				return;
 			} else {
-				!services.speechQueue.destroy(guildId)
+				services.speechQueue.destroy(guildId);
 				await interaction.reply({ content: `読み上げbotを切断しました。` });
 			}
 		} else if (interaction.options.getSubcommand() === 'change') {
