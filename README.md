@@ -32,7 +32,7 @@ docker compose up -d
 コマンドの設定もします。
 
 ```shell
-docker compose run discord_tool_bot node deploy-commands.js
+docker compose exec discord_tool_bot node deploy-commands.js
 ```
 
 これで終わりです。
@@ -46,16 +46,16 @@ docker compose run discord_tool_bot node deploy-commands.js
 git pull
 ```
 
-次に、コマンドを更新します。
-
-```shell
-docker compose run --build discord_tool_bot node deploy-commands.js
-```
-
-最後に、再ビルドして起動します。
+次に、再ビルドして起動します。
 
 ```shell
 docker compose up -d --build
+```
+
+最後に、コマンドを更新します。
+
+```shell
+docker compose exec discord_tool_bot node deploy-commands.js
 ```
 
 これで終わり。簡単すぎる！
