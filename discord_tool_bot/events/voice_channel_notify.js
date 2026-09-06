@@ -19,7 +19,6 @@ module.exports = {
                     .setAuthor({ name: `${oldState.member.user.username}`, iconURL: `${oldState.member.user.avatarURL()}` })
                     .setTimestamp()
                     .setColor('Green')
-                console.log(oldState.member.user);
                 return channel.send(
                     { content: "@here", embeds: [MessageEmbedStart] }
                 )
@@ -30,7 +29,7 @@ module.exports = {
                     .setAuthor({ name: `${oldState.member.user.username}`, iconURL: `${oldState.member.user.avatarURL()}` })
                     .setTimestamp()
                     .setColor('Green')
-                if (If_Notify_Status_Voice_Channel == true) {// ボイスチャンネルで通知するかどうかをチェック
+                if (If_Notify_Status_Voice_Channel) {// ボイスチャンネルで通知するかどうかをチェック
                     // ボイスチャンネルに接続されているか確認
                     if (services.speechService.check(guildId)) {
                         // 接続状態のみ、音声通知をする。
@@ -60,7 +59,7 @@ module.exports = {
                 .setAuthor({ name: `${oldState.member.user.username}`, iconURL: `${oldState.member.user.avatarURL()}` })
                 .setTimestamp()
                 .setColor('Red')
-            if (If_Notify_Status_Voice_Channel === true) {// ボイスチャンネルで通知するかどうかをチェック
+            if (If_Notify_Status_Voice_Channel) {// ボイスチャンネルで通知するかどうかをチェック
                 // ボイスチャンネルに接続されているか確認
                 if (services.speechService.check(guildId)) {
                     // 接続状態のみ、音声通知をする。
