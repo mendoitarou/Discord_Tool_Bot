@@ -8,6 +8,9 @@ const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const SpeechService = require("./services/SpeechService");
 const SpeechQueue = require("./services/SpeechQueue");
 
+// 設定用のサービス
+const SettingService = require('./services/SettingService');
+
 const { DISCORD_BOT_TOKEN } = process.env;
 
 const client = new Client({
@@ -22,10 +25,12 @@ const client = new Client({
 // サービスのクラスを作成し、渡しやすいようにまとめておく
 const speechService = new SpeechService();
 const speechQueue = new SpeechQueue(speechService);
+const settingService = new SettingService();
 
 const services = {
     speechService,
-    speechQueue
+    speechQueue,
+	settingService
 };
 
 // スラッシュコマンド追加処理

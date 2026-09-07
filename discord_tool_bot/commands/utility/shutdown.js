@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, MessageFlags, PermissionFlagsBits } = require('discord.js');
 
-const { ownerId, guildId } = process.env;
+const { ownerId } = process.env;
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -8,6 +8,7 @@ module.exports = {
 		.setDescription('This bot shutdown.')
         .setDefaultMemberPermissions(PermissionFlagsBits.ADMINISTRATOR),
 	async execute(interaction, { services }) {
+        const guildId = interaction.guild.id;
         if (interaction.user.id === ownerId) {
             if(services.speechService.check(guildId)) { // ボイスチャットに接続してるか
                 services.speechQueue.destroy(guildId); // ボイスチャットから切断

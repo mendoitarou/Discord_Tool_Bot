@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const { Events } = require('discord.js');
 
-const { guildId, Reading_Channel, If_Reding, Reading_Role_Id, MAX_TEXT_LENGTH, Language } = process.env;
+const { MAX_TEXT_LENGTH, Language } = process.env;
 
 // Text Length
 function countGrapheme(string) {
@@ -20,8 +20,10 @@ function replaceText(text, max_length) {
 module.exports = {
     name: Events.MessageCreate,
     async execute(interaction, { services }) {
+        const guildId = interaction.guild.id;
+        const { Reading_Channel, If_Reding, Reading_Role_Id } = services.settingService.getAll(guildId); // 設定取得
+        if (Reading_Channel == '' || Reading_Role_Id == '') return;
         if (!If_Reding) return;// If_Reading True?
-        if (interaction.guild.id !== guildId) return;// Receive guild is guildId?
         if (interaction.channelId !== Reading_Channel) return;// Receive channel is Reading_Channel?
         if (!services.speechService.check(guildId)) return; // Is bot joined voice channel?
         const member = interaction.member;

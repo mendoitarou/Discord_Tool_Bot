@@ -24,19 +24,17 @@ https://qiita.com/yamato_sorariku/items/6272745ea398cc0df8bf
 # Default Config
 ```
 {
-	"DISCORD_BOT_TOKEN": "",
-	"clientId": "",
-	"guildId": "",
-	"ownerId": "",
-	"NOTIFY_CHANNEL": "",
-	"Reading_Channel": "",
-	"Reading_Role_Id": "",
-	"Voice_Channel_Id": "",
-	"If_Reding": true,
-	"VOICEVOX_API_URL": "http://voicevox:50021",
-	"VOICEVOX_Speaker_Id": "3"
+    "settings": {
+        "template": {
+            "NOTIFY_CHANNEL": "",
+            "Reading_Channel": "",
+            "Reading_Role_Id": "",
+            "Voice_Channel_Id": "",
+            "If_Reding": true,
+            "If_Notify_Status_Voice_Channel": true
+        }
+    }
 }
-
 
 ```
 

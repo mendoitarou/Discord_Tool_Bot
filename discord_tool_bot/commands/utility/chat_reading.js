@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, MessageFlags, InteractionContextType } = require('discord.js');
 
-const { guildId, Voice_Channel_Id, Reading_Role_Id, VOICEVOX_Speaker_Id } = process.env;
+const { VOICEVOX_Speaker_Id } = process.env;
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -60,10 +60,18 @@ module.exports = {
 				.setDescription('The reason for banning'))*/
 		.setContexts(InteractionContextType.Guild),
 	async execute(interaction, { services }) {
+		const guildId = interaction.guild.id;
+		// GetSettings
 		if (interaction.options.getSubcommand() === 'available') {
 			const availability = interaction.options.getBoolean('availability');
 			await interaction.reply({ content: `This command is created now!`, flags: MessageFlags.Ephemeral });
 		} else if (interaction.options.getSubcommand() === 'connect') {
+			// Setting Get
+			const Voice_Channel_Id = services.settingService.get(guildId, 'Voice_Channel_Id');
+			if(Voice_Channel_Id == '') {
+				await interaction.reply({ content: 'エラーが発生しました。' });
+				return;
+			}
 			// 接続処理
 			services.speechService.connect(
 				guildId,
@@ -83,6 +91,11 @@ module.exports = {
 		} else if (interaction.options.getSubcommand() === 'change') {
 			// 対象変更コマンド(ロール付与)
 			const availability = interaction.options.getBoolean('availability');
+			const Reading_Role_Id = services.settingService.get(guildId, 'Reading_Role_Id');
+			if(Reading_Role_Id == '') {
+				await interaction.reply({ content: 'エラーが発生しました。' });
+				return;
+			}
 			if (availability) {
 				// 有効化
 				const role = interaction.guild.roles.cache.get(Reading_Role_Id);
@@ -111,6 +124,11 @@ module.exports = {
 		} else if (interaction.options.getSubcommand() === 'check') {
 			// 確認コマンド
 			const member = interaction.member;
+			const Reading_Role_Id = services.settingService.get(guildId, 'Reading_Role_Id');
+			if(Reading_Role_Id == '') {
+				await interaction.reply({ content: 'エラーが発生しました。' });
+				return;
+			}
 			if (member.roles.cache.some(role => role.id === Reading_Role_Id)) {
 				await interaction.reply({ content: 'あなたはチャット読み上げ対象者です！', flags: MessageFlags.Ephemeral });
 			} else {
