@@ -36,11 +36,17 @@ const rest = new REST().setToken(DISCORD_BOT_TOKEN);
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
 		// The put method is used to fully refresh all commands in the guild with the current set
+		const dataReset = await rest.put(
+			Routes.applicationGuildCommands(clientId, guildId), // 一つのギルドに登録(速い)
+			{ body: [] }, // 空にして削除
+		);
+
 		const data = await rest.put(
-			Routes.applicationGuildCommands(clientId, guildId),
+			Routes.applicationCommands(clientId), // Botに登録(遅い)
 			{ body: commands },
 		);
 
+		console.log(`Successfully reset ${dataReset.length} application (/) commands.`);
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
 	} catch (error) {
 		// And of course, make sure you catch and log any errors!

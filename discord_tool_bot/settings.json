@@ -1,0 +1,12 @@
+{
+    "settings": {
+        "template": {
+            "NOTIFY_CHANNEL": "",
+            "Reading_Channel": "",
+            "Reading_Role_Id": "",
+            "Voice_Channel_Id": "",
+            "If_Reding": true,
+            "If_Notify_Status_Voice_Channel": true
+        }
+    }
+}

@@ -1,12 +1,12 @@
 const { Events, EmbedBuilder } = require('discord.js');
 
-const { guildId, NOTIFY_CHANNEL, If_Notify_Status_Voice_Channel } = process.env;
-
 module.exports = {
     name: Events.VoiceStateUpdate,
     async execute(oldState, newState, { client, services }) {
-        if (oldState.guild.id !== guildId) return;
+        const guildId = oldState.member.guild.id;
         if (oldState.member.user.bot) return;// Bot検知
+        const { NOTIFY_CHANNEL, If_Notify_Status_Voice_Channel } = services.settingService.getAll(guildId); // 設定取得
+        if (NOTIFY_CHANNEL == '' || If_Notify_Status_Voice_Channel == '') return;
         const channel = oldState.member.guild.channels.cache.get(
             NOTIFY_CHANNEL
         );
