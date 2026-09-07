@@ -38,6 +38,15 @@ https://qiita.com/yamato_sorariku/items/6272745ea398cc0df8bf
 
 ```
 
+## Sacloud AI Engine
+`.env`
+
+```
+VOICEVOX_API_URL=https://api.ai.sakura.ad.jp/tts/v1
+VOICEVOX_isAuth=true
+VOICEVOX_API_TOKEN=************************
+```
+
 # Access Web Sites
 https://github.com/mendoitarou/Discord_TextChat_Reading_BOT
 
